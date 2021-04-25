@@ -1,5 +1,8 @@
 import scrapy
 
+# Basic Info Scraping
+# You can choose the one you like to extract the info, in this exercise,
+# try to extract this product detail such as title, desc and price.
 
 class Ex1Spider(scrapy.Spider):
     name = 'ex1'
