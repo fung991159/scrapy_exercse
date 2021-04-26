@@ -26,24 +26,17 @@ class Spider(scrapy.Spider):
             yield scrapy.Request(url = self.base + self.to_ajax(p)
                                 , callback = self.parse_ajax
                                 , headers ={'referer': self.base + p,
-                                            'User-Agent':  'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36'
+                                            'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36',
+                                            'X-Requested-With': 'XMLHttpRequest'
                                             }
                                 )
 
+        next_page = response.xpath("//a[text()='Next']/@href").get()
+        if next_page:
+            yield response.follow(f'https://scrapingclub.com/exercise/list_infinite_scroll/{next_page}', callback=self.parse)
+
     def parse_ajax(self, response):
-        print(response.text)
-        # yield json.loads(response.text) 
+        yield json.loads(response.text) 
 
-    # def parse_product(self, response):
-        # print(response.body)
-        # new_p = response.url.replace('list_detail_infinite_scroll', 'list_detail_ajax_infinite_scroll')
-        # yield scrapy.Request(url=f'https://scrapingclub.com{new_p}'
-        #                          , callback = self.parse_ajax
-        #                          , headers = {'referer': response.url})
-
-        # next_page = response.xpath("//a[text()='Next']/@href").get()
-        # if next_page:
-        #     yield response.follow(f'https://scrapingclub.com/exercise/list_infinite_scroll/{next_page}'
-        #                           , callback=self.parse
-        #                           , headers={'referer': f'{self.start_urls[0]}'})
-
+# so the tricky part of this exercise is "X-Requested-With", spent a day looking for clues,
+# but now I am master of checking request with AJAX now :D
